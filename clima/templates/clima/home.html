@@ -1,0 +1,179 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="https://openweathermap.org/img/wn/{{ resultado.icone }}@2x.png" type="image/x-icon">
+    <title>Clima na sua cidade</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: url('https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 0;
+        }
+
+        .content, .content-2 {
+            position: relative;
+            z-index: 1;
+            background-color: rgba(114, 55, 0, 0.795);
+            width: 100%;
+            max-width: 700px;
+            margin: 10px auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-sizing: border-box;
+            backdrop-filter: blur(4px);
+        }
+
+        .content h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .resultado h2 {
+            font-size: 2rem;
+            margin-top: 20px;
+        }
+
+        .resultado img.weather-icon {
+            max-width: 140px;
+            margin: 10px 0;
+        }
+
+        .flag {
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        .formulario,
+        .content-2 form {
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        input.form-control {
+            flex: 1 1 250px;
+            min-width: 150px;
+            max-width: 100%;
+            font-size: 1.1rem;
+        }
+
+        button.btn {
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .content, .content-2 {
+                max-width: 95%;
+                padding: 25px;
+            }
+
+            .content h1 {
+                font-size: 2.2rem;
+            }
+
+            .resultado h2 {
+                font-size: 1.6rem;
+            }
+
+            input.form-control, button.btn {
+                width: 100%;
+                font-size: 1.2rem;
+            }
+
+            .resultado img.weather-icon {
+                max-width: 100px;
+            }
+
+            p.fs-4 {
+                font-size: 1.3rem !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content h1 {
+                font-size: 2rem;
+            }
+
+            .resultado h2 {
+                font-size: 1.4rem;
+            }
+
+            p.fs-4 {
+                font-size: 1.2rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="content">
+    <h1 class="mb-4">🌤 SolarWeather</h1>
+
+    <form method="get" class="formulario">
+        <input type="text" name="cidade" class="form-control" placeholder="Digite a cidade" value="{{ cidade_digitada }}">
+        <button type="submit" class="btn btn-primary">Pesquisar</button>
+    </form>
+
+    <div class="resultado">
+        {% if resultado %}
+            {% if sucesso %}
+                <h2>
+                    {{ resultado.nome }}{% if resultado.estado %}, {{ resultado.estado }}{% endif %}, {{ resultado.pais }}
+                    {% if resultado.pais %}
+                        <img class="flag" src="https://flagcdn.com/24x18/{{ resultado.pais|lower }}.png" alt="{{ resultado.pais }} bandeira">
+                    {% endif %}
+                </h2>
+                <img class="weather-icon" src="https://openweathermap.org/img/wn/{{ resultado.icone }}@2x.png" alt="{{ resultado.desc }}">
+                <p class="fs-4" style="background-color: rgba(5, 166, 194, 0.795);">{{ resultado.temp }}°C - {{ resultado.desc }}</p>
+                <p style="background-color: rgba(255, 255, 255, 0.616); color: black;"><strong>Recomendação de roupa:</strong> {{ resultado.roupa }}</p>
+            {% else %}
+                <p class="text-danger fs-5">{{ resultado.erro }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<div class="content-2">
+    <h5 class="mt-4">Não encontrou sua cidade? Adicione região e país!</h5>
+    <form method="get">
+        <input type="text" name="cidade" class="form-control" placeholder="Cidade" value="{{ cidade_digitada|default_if_none:'' }}">
+        <input type="text" name="estado" class="form-control" placeholder="Estado/Região" value="{{ estado_digitado|default_if_none:'' }}">
+        <input type="text" name="pais" class="form-control" placeholder="País (ISO 2 letras)" value="{{ pais_digitado|default_if_none:'' }}">
+        {% if pais_digitado %}
+            <img class="flag" src="https://flagcdn.com/24x18/{{ pais_digitado|lower }}.png" alt="{{ pais_digitado }} bandeira">
+        {% endif %}
+        <button type="submit" class="btn btn-success">Pesquisar</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
